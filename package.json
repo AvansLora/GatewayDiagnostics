@@ -4,8 +4,7 @@
   "description": "test project om de luchtvochtigheid te meten",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "python": "pyhton index.py"
+    "start": "node index.js"
   },
   "author": "23TIVT3-IoT2",
   "license": "ISC",
