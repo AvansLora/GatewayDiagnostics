@@ -1,5 +1,5 @@
  /**
-* Created by renek on 9-3-2017.
+* Created by renek on 9-5-2017.
 */
 var express     = require('express');
 var jwt         = require('jsonwebtoken');
