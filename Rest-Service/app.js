@@ -11,20 +11,12 @@ var app         = express();
 var settings    = require('./config.json');
 var version1    = require('./routes/V1')
 
-app.set('superSecret',settings.secret);
+app.set('superSecret',settings.secret );
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 app.all('*', function(req,res,next){
-    // console.log("got request:");
-    // console.log(req.method + " " + req.url);
-
-
-
-    //Access-Control-Allow-Headers: Content-Type
-    //Access-Control-Allow-Methods: GET, POST, OPTIONS
-    //Access-Control-Allow-Origin: *
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Origin', '*');

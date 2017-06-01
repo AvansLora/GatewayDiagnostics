@@ -7,25 +7,39 @@ var router      = express.Router();
 var settings    = require('./../config.json');
 var database    = require('../Model/database');
 
+//for test purpose:
+router.post('/registerUser', function(req,res){
+    var username    = req.body.username;
+    var password    = req.body.password;
+    var hardware    = req.body.hardwareId;
+    var token       = req.body.token;
+    if(token == settings.secret){
+        database.registerUser(username, password, hardware, function(status, message){
+            res.status(status).send(message);
+        });
+    }
+});
  //call this function with post message with this body
  //{username: 'user', password: 'password'}
  //return value is userdata in json
 router.post('/authenticate', function(req,res){
     var username = req.body.username;
     var password = req.body.password;
-    if(username == "rene" && password == 'wachtwoordje'){
-        var token = jwt.sign({data: username},settings.secret,{expiresIn: '1h'})
-        res.json({
-            succes:true,
-            message: "Enjoy your token",
-            token: token
-        })
-    }else{
-        res.json({
-            succes: false,
-            message:"authentication failure"
-        })
-    }
+    database.authenticateUser(username, password, function(success, user){
+        if(success){
+            var token = jwt.sign({data: user},settings.secret,{expiresIn: '1h'})
+            res.status(200).json({
+                succes:true,
+                message: "Enjoy your token",
+                token: token
+            });
+        }else{
+            res.status(401).json({
+                succes: false,
+                message:"authentication failure"
+            });
+        }
+    });
 });
 
 router.use(function(req,res,next){
