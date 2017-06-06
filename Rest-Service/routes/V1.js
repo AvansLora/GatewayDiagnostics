@@ -8,7 +8,7 @@ var settings    = require('./../config.json');
 var database    = require('../Model/database');
 
 //for test purpose:
-router.post('/registerUser', function(req,res){
+router.post('/registeruser', function(req,res){
     var username    = req.body.username;
     var password    = req.body.password;
     var hardware    = req.body.hardwareId;
@@ -19,9 +19,24 @@ router.post('/registerUser', function(req,res){
         });
     }
 });
- //call this function with post message with this body
- //{username: 'user', password: 'password'}
- //return value is userdata in json
+
+router.post('/registergateway', function(req,res){
+    let token       = req.body.token
+    let gatewayName = req.body.gatewayname;
+    let username    = req.body.username;
+    let password    = req.body.password;
+
+    
+    if(token !== settings.secret)
+        return res.status(403).send({status:"wrong key"});
+    database.registerGateway(username, password, gatewayName, function(status, message){
+        res.status(status).send(message);
+    });
+});
+
+//call this function with post message with this body
+//{username: 'user', password: 'password'}
+//return value is userdata in json
 router.post('/authenticate', function(req,res){
     var username = req.body.username;
     var password = req.body.password;
@@ -55,20 +70,28 @@ router.use(function(req,res,next){
     }else{
         return res.status(403).send({succes:false, message:'no token provided'});
     }
-
-})
-
-router.post('/addmeasurement', function(req,res){
-   var hardwareId = req.body.hardwareId;
-   var measurements = req.body.measurements;
-   database.addMeasurement(hardwareId, measurements, function(status, message){
-       res.status(status).send(message);
-   })
 });
+
+//measurements:
+//{"cputemp": 50, "casetemp":20, "humidity":70}
+router.post('/addmeasurement', function(req,res){
+   let token            = req.body.token || req.query.token || req.headers['x-access-token'];
+   let measurement      = req.body.measurement;
+   let user             = jwt.verify(token, settings.secret, function (err, decoded){
+       if(err) return res.status(500).send({success: false, message: err});
+       let gatewayData = decoded.data;
+       if(!gatewayData.IsGateway) return res.status(401).send({status:"only gateways may add data"});
+       database.addMeasurement(gatewayData, measurement, function(status, message){
+            res.status(status).send(message);
+       });
+
+       //res.status(200).send("goeie");
+   });
+}); 
 
  //all unknown calls:
 router.get('*', function(req,res){
-    res.status(400).send({
+    res.status(405).send({
         "description": "unknown call"
     });
 });

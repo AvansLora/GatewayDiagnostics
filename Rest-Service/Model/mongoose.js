@@ -1,3 +1,4 @@
+var mongoose = require('mongoose');
 //file with all constansts for mongoose
 
 //database tables:
@@ -7,10 +8,10 @@ var GateWaysTable       = 'Gateways';
 var MeasurementsTable   = 'Measurements';
 
 var UsersSchema = new mongoose.Schema({
-    UserId              : Number,
+    Id              : Number,
     Username            : String,
     Password            : String,
-    IsAdmin             : Boolean 
+    IsGateway           : Boolean 
 });
 
 var UserRightsSchema = new mongoose.Schema({
@@ -24,6 +25,7 @@ var GateWaysSchema = new mongoose.Schema({
 });
 
 var MeasurementsSchema = new mongoose.Schema({
+    HardwareId          : Number,
     DateTime            : {type: Date, default: Date.now},
     CPUTemp             : Number,
     CaseTemp            : Number,

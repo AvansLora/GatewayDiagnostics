@@ -16,10 +16,10 @@ function registerUser(username, password, hardwareId, callback){
         table.count({}, function(err, count){
             var newUser = new table(
                 {
-                    UserId      : count,
+                    Id          : count,
                     Username    : username,
                     Password    : password,
-                    isAdmin     : true
+                    IsGateway   : false
                 }
             );
             newUser.save(function(err){
@@ -28,31 +28,120 @@ function registerUser(username, password, hardwareId, callback){
             });
         });
     });
-}
+};
+
+//setup bridge 
+function setUserHardwareBridge(userId, hardwareId, callback){
+    connectDatabase(parameters.UserRightsTable, parameters.UserRightsSchema, function(table){
+        var newBridge = new table({
+            UserId      : userId,
+            HardwareId  : hardwareId
+        });
+        newBridge.save(function(err){
+            if(err) return callback(500, {status:err});
+            return callback(200);
+        });
+    });
+};
+
+//add gateway in gateway table
+function addGateway(userId, gatewayName, callback){
+    connectDatabase(parameters.GateWaysTable, parameters.GateWaysSchema, function(table){
+        table.count({}, function(err, count){
+            if(err) return callback(500,{"status":err});
+            var newGateway = new table({
+                HardwareId      : count,
+                HardwareName    : gatewayName
+            });
+            newGateway.save(function(err){
+                if(err) return callback(500, {status:err});
+                setUserHardwareBridge(userId,count, function(status, message){
+                    if(status !== 200)
+                        return callback(status, message);
+                    return callback(200, {
+                        status  : "successful registered"
+                    });
+                });
+            });
+        });
+    });
+};
+
+//add gateway in user schema, so gateway could login
+function registerGateway(username, password, gatewayName, callback){
+    connectDatabase(parameters.UsersTable,parameters.UsersSchema, function(table){
+        table.count({}, function(err, count){
+            var newGateway = new table({
+                Id          : count,
+                Username    : username,
+                Password    : password,
+                IsGateway   : true
+            });
+            newGateway.save(function(err){
+                if(err) return callback(500, {"status":err});
+                addGateway(count,gatewayName,callback);
+            });
+        }); 
+    });
+};
 
 function authenticateUser(username, password, callback){
     connectDatabase(parameters.UsersTable,parameters.UsersSchema, function(table){
         table.find({Username: username, Password: password},function(err, data){
             if(err){console.log(err); return callback(false);}
-            if(data.length > 0)
-                return callback(true, data[0]);
-            callback(false);
+            if(data.length == 0)
+                return callback(false);    
+            callback(true, data[0]);
         });
     });
-}
+};
 
-function addMeasurement(hardwareId, measurements, callback){
+function getHardwareId(userId, callback){
+    connectDatabase(parameters.UserRightsTable,parameters.UserRightsSchema, function(table){
+        table.find({UserId: userId}, function(err, data){
+            if(err || data.length <= 0) callback(-1);
+            callback(data[0].HardwareId);
+        });
+    });
+};
 
-    callback(200, {status:"measurement added"});
-}
+//measurements:
+//{"cputemp": 50, "casetemp":20, "humidity":70}
+function saveMeasurement(hardwareId,measurements, callback){
+    let jsonmeasurements = "";
+    try{
+        jsonmeasurements = JSON.parse(measurements);
+    }catch(err){
+        return callback(406,{status: "wrong format measurements"});
+    }
 
-function getMeasurements(hardwareId, callback){
-    callback(200, {temp:"28"});
-}
+    connectDatabase(parameters.MeasurementsTable,parameters.MeasurementsSchema, function(table){
+        let newMeasurement = new table({
+            HardwareId  : hardwareId,
+            CPUTemp     : jsonmeasurements.cputemp,
+            CaseTemp    : jsonmeasurements.casetemp,
+            Humidity    : jsonmeasurements.humidity
+        });
+        newMeasurement.save(function(err){
+            if(err) return callback(500,{status: err});
+            callback(200, {status:"successfull added"});
+        });
+    });
+};
+
+
+function addMeasurement(gatewayData, measuserments, callback){
+    getHardwareId(gatewayData.Id, function(id){
+        if(id < 0) return callback(401, {satus: "no gateway found"});
+        saveMeasurement(id,measuserments, function(status, message){
+           callback(status, message); 
+        });
+    });
+};
 
 module.exports = {
     registerUser,
+    registerGateway,
     authenticateUser,
-    addMeasurement, 
-    getMeasurements
+    addMeasurement
 }
