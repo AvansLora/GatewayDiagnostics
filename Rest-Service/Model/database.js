@@ -108,19 +108,12 @@ function getHardwareId(userId, callback){
 //measurements:
 //{"cputemp": 50, "casetemp":20, "humidity":70}
 function saveMeasurement(hardwareId,measurements, callback){
-    let jsonmeasurements = "";
-    try{
-        jsonmeasurements = JSON.parse(measurements);
-    }catch(err){
-        return callback(406,{status: "wrong format measurements"});
-    }
-
     connectDatabase(parameters.MeasurementsTable,parameters.MeasurementsSchema, function(table){
         let newMeasurement = new table({
             HardwareId  : hardwareId,
-            CPUTemp     : jsonmeasurements.cputemp,
-            CaseTemp    : jsonmeasurements.casetemp,
-            Humidity    : jsonmeasurements.humidity
+            CPUTemp     : measurements.cputemp,
+            CaseTemp    : measurements.casetemp,
+            Humidity    : measurements.humidity
         });
         newMeasurement.save(function(err){
             if(err) return callback(500,{status: err});

@@ -23,7 +23,7 @@ Hierna hoeft er alleen nog maar geauthenticeerd te worden om data te sturen
         URL     : server:8081/apiV1/addmeasurement
         BODY    : 
             token       : token                 //token teruggekregen bij authenticatie
-            measurements: {                     //data uitgelezen, vergeet de " niet
+            measurement: {                     //data uitgelezen, vergeet de " niet
                 "cputemp":50,                    
                 "casetemp":21,
                 "humidity":70
