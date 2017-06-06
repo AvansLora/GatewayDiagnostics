@@ -13,7 +13,7 @@ router.post('/registeruser', function(req,res){
     var password    = req.body.password;
     var hardware    = req.body.hardwareId;
     var token       = req.body.token;
-    if(token == settings.secret){
+    if(token == settings.password){
         database.registerUser(username, password, hardware, function(status, message){
             res.status(status).send(message);
         });
@@ -27,7 +27,7 @@ router.post('/registergateway', function(req,res){
     let password    = req.body.password;
 
     
-    if(token !== settings.secret)
+    if(token !== settings.password)
         return res.status(403).send({status:"wrong key"});
     database.registerGateway(username, password, gatewayName, function(status, message){
         res.status(status).send(message);

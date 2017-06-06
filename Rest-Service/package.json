@@ -1,7 +1,7 @@
 {
   "name": "rest-api",
   "version": "1.0.0",
-  "description": "rest api for todo list",
+  "description": "rest api for diagnostics tool",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -18,7 +18,7 @@
     "moongodb",
     "mongoose"
   ],
-  "author": "Rene Keijzer and Malek Sediqi",
+  "author": "TI IOT LORA",
   "license": "ISC",
   "dependencies": {
     "express": "4.15.2",
@@ -27,5 +27,5 @@
     "jsonwebtoken": "7.4.0",
     "morgan": "1.8.1"
   },
-  "homepage": "https://github.com/rene1997/AngularToDoList#readme"
+  "homepage": "https://github.com/AvansLora"
 }
