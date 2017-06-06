@@ -80,7 +80,7 @@ router.use(function(req,res,next){
     }
 });
 
-//measurements:
+//measurement:
 //{"cputemp": 50, "casetemp":20, "humidity":70}
 router.post('/addmeasurement', function(req,res){
    let token            = req.body.token || req.query.token || req.headers['x-access-token'];

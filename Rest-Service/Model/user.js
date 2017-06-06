@@ -8,22 +8,7 @@ module.exports = {
 }
 
 function registerUser(username, password, callback){
-    db.connectDatabase(db.UsersTable,db.UsersSchema, function(table){
-        table.count({}, function(err, count){
-            var newUser = new table(
-                {
-                    Id          : count,
-                    Username    : username,
-                    Password    : password,
-                    IsGateway   : false
-                }
-            );
-            newUser.save(function(err){
-                if(err) return callback(500, {"status": err});
-                callback(200, {newUser});
-            });
-        });
-    });
+    callback(200,{status:"not implemented"})
 }
 
 function authenticateUser(username, password, callback){

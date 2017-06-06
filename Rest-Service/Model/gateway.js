@@ -8,6 +8,8 @@ module.exports = {
 
 //add gateway in user schema, so gateway could login
 function registerGateway(username, password, gatewayName, callback){
+    if(username == password) return callback(400,{status:"username & password are equal"});
+    if(username.length < 4 || password.length < 4)return callback(400,{status:"username / password too short"});
     db.connectDatabase(db.UsersTable,db.UsersSchema, function(table){
         table.count({}, function(err, count){
             var newGateway = new table({
@@ -61,6 +63,7 @@ function addGateway(userId, gatewayName, callback){
 function saveMeasurement(hardwareId,measurements, callback){
     if(!measurements.cputemp || !measurements.casetemp || !measurements.humidity)
         return callback(401, {status: "missing measurements"});
+        
     db.connectDatabase(db.MeasurementsTable,db.MeasurementsSchema, function(table){
         let newMeasurement = new table({
             HardwareId  : hardwareId,
