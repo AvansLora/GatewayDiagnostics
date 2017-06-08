@@ -5,21 +5,22 @@ var settings    = require('./../config.json');
 var user        = require('../Model/user');
 var gateway     = require('../Model/gateway');
 
-//for test purpose:
 router.post('/registeruser', function(req,res){
     var username    = req.body.username;
     var password    = req.body.password;
     var token       = req.body.token;
-    if(token == settings.password){
-        if(!username || !password) 
-            return res.status(401).send({status:"missing some parameters"});
-        user.checkUsername(username, function(amountOfUsers){
-            if(amountOfUsers != 0) return res.status(400).send({status:"username already exist"});
-            user.registerUser(username, password, function(status, message){
-                res.status(status).send(message);
-            });
-        });    
-    }
+    //check data
+    if(token !== settings.password) return  res.status(401).send({status:"wrong register token"});
+    if(!username || !password) return res.status(401).send({status:"missing some parameters"});
+
+    user.checkUsername(username, function(amountOfUsers){
+        if(amountOfUsers != 0) return res.status(400).send({status:"username already exist"});
+        
+        //register user
+        user.registerUser(username, password, function(status, message){
+            res.status(status).send(message);
+        });
+    });    
 });
 
 router.post('/registergateway', function(req,res){
@@ -45,14 +46,14 @@ router.post('/registergateway', function(req,res){
 //{username: 'user', password: 'password'}
 //return value is userdata in json
 router.post('/authenticate', function(req,res){
-    var username = req.body.username;
-    var password = req.body.password;
+    let username = req.body.username;
+    let password = req.body.password;
     if(!username || !password)
         return res.status(401).send({status:"username / password not valid"});
 
     user.authenticateUser(username, password, function(success, user){
         if(success){
-            var token = jwt.sign({data: user},settings.secret,{expiresIn: '1h'})
+            let token = jwt.sign({data: user},settings.secret,{expiresIn: '1h'})
             res.status(200).json({
                 message: "Enjoy your token",
                 token: token
@@ -80,15 +81,44 @@ router.use(function(req,res,next){
     }
 });
 
+router.post('/addgatewaytouser', function(req,res){
+    let gwusername  = req.body.username;
+    let gwpassword  = req.body.password;
+    let token       = req.body.token;
+    jwt.verify(token, settings.secret, function(err, userdata){
+        if(err) return res.status(500).send({status: err});
+        if(userdata.IsGateway) return res.status(401).send({status: "gateways may not access other gateways"});
+
+        user.addUserRight(userdata,gwusername,gwpassword, function(status, message){
+            res.status(status).send(message);
+        });
+    });
+});
+
+router.post('/listgateways', function(req,res){
+    let token = req.body.token;
+    jwt.verify(token, settings.secret, function(err, userdata){
+        if(err) return res.status(500).send({status:err});
+        user.getGateways(userdata, function(status, message){
+            res.status(status).send(message);
+        });
+    });
+});
+
 //measurement:
 //{"cputemp": 50, "casetemp":20, "humidity":70}
 router.post('/addmeasurement', function(req,res){
    let token            = req.body.token || req.query.token || req.headers['x-access-token'];
    let measurement      = req.body.measurement;
-   if(!measurement)
-        return res.status(401).send({status: "missing measurements"});
-   let user             = jwt.verify(token, settings.secret, function (err, decoded){
-       if(err) return res.status(500).send({success: false, message: err});
+   if(!measurement){
+        let cputemp     = req.body.cputemp;
+        let casetemp    = req.body.casetemp;
+        let humidity    = req.body.humidity;
+        measurement = {cputemp: cputemp,casetemp: casetemp, humidity : humidity};
+        console.log("new measurement: ",measurement);
+   }
+   jwt.verify(token, settings.secret, function (err, decoded){
+       if(err) return res.status(500).send({status: err});
        let gatewayData = decoded.data;
        if(!gatewayData.IsGateway) return res.status(401).send({status:"only gateways may add data"});
        gateway.addMeasurement(gatewayData, measurement, function(status, message){
