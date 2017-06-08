@@ -69,3 +69,22 @@ Om een lijstje te krijgen met gateways die ingezien kunnen worden, moet de volge
         URL     : server:8081/apiV1/listgateways
         BODY    : 
             token       : token verkregen bij authenticatie
+De response zal dan in een volgendem manier gegeven worden:
+    {
+        "gateways": [
+            {
+                "_id": "593902a83c40011d38de1f8b",
+                "HardwareId": 0,
+                "HardwareName": "schoolgateway",
+                "__v": 0
+            }
+        ]
+    }
+
+5. Laatste meting gateway
+Om de laatste meting van een gateway op te halen, moet de volgende request verstuurd worden:
+    POST Request:
+        URL     : server:8081/apiV1/lastMeasurement
+        BODY    :
+            token       : token
+            gatewayId  : HardwareId

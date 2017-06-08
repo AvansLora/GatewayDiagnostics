@@ -119,13 +119,17 @@ function getGateways(userdata, callback){
 }
 
 function listGateway(hardwareIds, callback){
+    let gateways = [];
     db.connectDatabase(db.GateWaysTable, db.GateWaysSchema, function(table){
         table.find({}, function(err,data){
             for(let i = 0; i < hardwareIds.length; i ++){
-                console.log("awesome");
-                console.log(i, "response: ", response);
+                let toFind = hardwareIds[i].HardwareId;
+                for(let j = 0; j < data.length; j++){
+                    if(toFind == data[j].HardwareId)
+                        gateways.push(data[j]);
+                }
             }
-            callback(200, {status:"mooi"});
+            callback(200, {gateways});
         });
     });
 }

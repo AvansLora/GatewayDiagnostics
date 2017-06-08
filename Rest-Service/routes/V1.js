@@ -115,7 +115,6 @@ router.post('/addmeasurement', function(req,res){
         let casetemp    = req.body.casetemp;
         let humidity    = req.body.humidity;
         measurement = {cputemp: cputemp,casetemp: casetemp, humidity : humidity};
-        console.log("new measurement: ",measurement);
    }
    jwt.verify(token, settings.secret, function (err, decoded){
        if(err) return res.status(500).send({status: err});
@@ -126,6 +125,13 @@ router.post('/addmeasurement', function(req,res){
        });
    });
 }); 
+
+router.post('/lastmeasurement', function(req,res){
+    let hardwareId      = req.body.gatewayid;
+    gateway.getLastMeasurement(hardwareId,function(status, message){
+        res.status(status).send(message);
+    });
+});
 
  //all unknown calls:
 router.get('*', function(req,res){

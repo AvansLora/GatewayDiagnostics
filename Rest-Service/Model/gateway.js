@@ -4,7 +4,8 @@ var encryption  = require('./encryption');
 
 module.exports = {
     registerGateway,
-    addMeasurement
+    addMeasurement,
+    getLastMeasurement
 }
 
 //add gateway in user schema, so gateway could login
@@ -101,4 +102,22 @@ function setUserHardwareBridge(userId, hardwareId, callback){
             return callback(200);
         });
     });
+}
+
+function getLastMeasurement(hardwareId, callback){
+    console.log(hardwareId)
+    db.connectDatabase(db.MeasurementsTable, db.MeasurementsSchema, function(table){
+       table.find({HardwareId: hardwareId},{},
+       {
+           skip:0,
+           limit:1,
+           sort:{
+               DateTime:-1
+           }
+       },function(err, data){
+           console.log(data);
+           if(err || data.length == 0) return callback(400, {status:"no measurements yet"});
+           callback(200, data);
+       });
+    }); 
 }
