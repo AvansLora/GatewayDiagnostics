@@ -1,5 +1,6 @@
 var mongoose    = require('mongoose');
 var db          = require('./mongoose');
+var encryption  = require('./encryption');
 
 module.exports = {
     registerUser,
@@ -13,11 +14,13 @@ function registerUser(username, password, callback){
 
 function authenticateUser(username, password, callback){
     db.connectDatabase(db.UsersTable,db.UsersSchema, function(table){
-        table.find({Username: username, Password: password},function(err, data){
+        table.find({Username: username},function(err, data){
             if(err){console.log(err); return callback(false);}
             if(data.length == 0)
-                return callback(false);    
-            callback(true, data[0]);
+                return callback(false);
+            if(encryption.comparePassword(password,data[0].Password))        
+                return callback(true, data[0]);
+            return callback(false);
         });
     });
 }

@@ -1,5 +1,6 @@
 var mongoose    = require('mongoose');
 var db          = require('./mongoose');
+var encryption  = require('./encryption');
 
 module.exports = {
     registerGateway,
@@ -10,12 +11,13 @@ module.exports = {
 function registerGateway(username, password, gatewayName, callback){
     if(username == password) return callback(400,{status:"username & password are equal"});
     if(username.length < 4 || password.length < 4)return callback(400,{status:"username / password too short"});
+    var encryptedPass = encryption.encryptPassword(password);
     db.connectDatabase(db.UsersTable,db.UsersSchema, function(table){
         table.count({}, function(err, count){
             var newGateway = new table({
                 Id          : count,
                 Username    : username,
-                Password    : password,
+                Password    : encryptedPass,
                 IsGateway   : true
             });
             newGateway.save(function(err){
@@ -81,7 +83,7 @@ function saveMeasurement(hardwareId,measurements, callback){
 function getHardwareId(userId, callback){
     db.connectDatabase(db.UserRightsTable,db.UserRightsSchema, function(table){
         table.find({UserId: userId}, function(err, data){
-            if(err || data.length <= 0) callback(-1);
+            if(err || data.length <= 0) return callback(-1);
             callback(data[0].HardwareId);
         });
     });
