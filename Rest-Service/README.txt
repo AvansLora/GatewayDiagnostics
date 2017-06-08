@@ -88,3 +88,13 @@ Om de laatste meting van een gateway op te halen, moet de volgende request verst
         BODY    :
             token       : token
             gatewayId  : HardwareId
+de laatste meting wordt in de response teruggegeven
+
+6. alle metingen gateway
+Om alle metingen van een gateway op te halen, moet de volgende request verstuurd worden:
+    POST Request:
+        URL     : server:8081/apiV1/allmeasurements
+        BODY    :
+            token       : token
+            gatewayId  : HardwareId
+de metingen wordt in de response teruggegeven

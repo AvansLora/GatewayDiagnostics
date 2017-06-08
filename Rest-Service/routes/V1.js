@@ -127,8 +127,17 @@ router.post('/addmeasurement', function(req,res){
 }); 
 
 router.post('/lastmeasurement', function(req,res){
-    let hardwareId      = req.body.gatewayid;
+    let hardwareId = req.body.gatewayid;
+    if(hardwareId == undefined) return res.status(400).send({status: "no gatewayid"});
     gateway.getLastMeasurement(hardwareId,function(status, message){
+        res.status(status).send(message);
+    });
+});
+
+router.post('/allmeasurements', function(req,res){
+    let hardwareId = req.body.gatewayid;
+    if(hardwareId == undefined)return res.status(400).send({status: "no gatewayid"});
+    gateway.getAllMeasurements(hardwareId, function(status, message){
         res.status(status).send(message);
     });
 });
