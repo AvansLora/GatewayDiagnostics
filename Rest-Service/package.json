@@ -1,0 +1,32 @@
+{
+  "name": "rest-api",
+  "version": "1.0.0",
+  "description": "rest api for diagnostics tool",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+"start":"node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rene1997/AngularToDoList.git"
+  },
+  "keywords": [
+    "angular",
+    "node",
+    "rest-api",
+    "moongodb",
+    "mongoose"
+  ],
+  "author": "TI IOT LORA",
+  "license": "ISC",
+  "dependencies": {
+    "express": "4.15.2",
+    "mongoose":"4.8.7",
+    "body-parser":"1.17.1",
+    "jsonwebtoken": "7.4.0",
+    "morgan": "1.8.1",
+    "bcrypt-nodejs": "0.0.3"
+  },
+  "homepage": "https://github.com/AvansLora"
+}
