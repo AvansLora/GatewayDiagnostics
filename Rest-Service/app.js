@@ -17,6 +17,8 @@ app.use(bodyParser.json());
 
 app.use(morgan('dev'));
 app.all('*', function(req,res,next){
+    console.log("got request: ", req.body);
+    //console.log(res);
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.header('Access-Control-Allow-Origin', '*');
