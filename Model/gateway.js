@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var mongoose    = require('mongoose');
 var db          = require('./mongoose');
 var encryption  = require('./encryption');
@@ -8,7 +8,7 @@ module.exports = {
     addMeasurement,
     getLastMeasurement,
     getAllMeasurements
-}
+};
 
 //add gateway in user schema, so gateway could login
 function registerGateway(username, password, gatewayName, callback){

@@ -56,4 +56,4 @@ module.exports = {
     GateWaysSchema,
     MeasurementsSchema,
     dbLocation
-}
+};

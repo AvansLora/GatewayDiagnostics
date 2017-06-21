@@ -1,4 +1,4 @@
-"use strict"
+"use strict";
 var express     = require('express');
 var jwt         = require('jsonwebtoken');
 var router      = express.Router();
@@ -25,7 +25,7 @@ router.post('/registeruser', function(req,res){
 });
 
 router.post('/registergateway', function(req,res){
-    let token       = req.body.token
+    let token       = req.body.token;
     let gatewayName = req.body.gatewayname;
     let username    = req.body.username;
     let password    = req.body.password;
@@ -104,6 +104,12 @@ router.post('/listgateways', function(req,res){
             res.status(status).send(message);
         });
     });
+});
+
+router.post('/allgateways', function (req, res) {
+  user.getAllGateways(function (response, data) {
+    res.status(response).send({"data": data});
+  });
 });
 
 //measurement:

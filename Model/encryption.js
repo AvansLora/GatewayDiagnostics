@@ -1,4 +1,4 @@
-var bcrypt      = require("bcrypt-nodejs");
+var bcrypt = require("bcrypt-nodejs");
 
 function encryptPassword(password){
     //TODO use bcrypt
@@ -10,8 +10,7 @@ function comparePassword(plainPassword, hash){
     return bcrypt.compareSync(plainPassword,hash);
 }
 
-
 module.exports = {
     encryptPassword,
     comparePassword
-}
+};

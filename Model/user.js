@@ -1,15 +1,16 @@
-"use strict"
+"use strict";
 var mongoose    = require('mongoose');
 var db          = require('./mongoose');
 var encryption  = require('./encryption');
 
 module.exports = {
-    registerUser,
-    authenticateUser,
-    checkUsername,
-    addUserRight,
-    getGateways
-}
+  registerUser,
+  authenticateUser,
+  checkUsername,
+  addUserRight,
+  getGateways,
+  getAllGateways
+};
 
 function registerUser(username, password, callback){
     var encryptedPass = encryption.encryptPassword(password);
@@ -78,7 +79,7 @@ function addUserRightRow(userId, hardwareId,callback){
                 HardwareId: hardwareId
             });
             newUserRight.save(function(err){
-                if(err) return callback(err)
+                if(err) return callback(err);
                 callback();
             });
         });
@@ -133,5 +134,61 @@ function listGateway(hardwareIds, callback){
             callback(200, {gateways});
         });
     });
+}
+
+function getAllGateways(callback) {
+  const gateways = [];
+  const combined = {
+    'Id': '',
+    'Username': '',
+    'HardwareId': '',
+    'HardwareName': ''
+  };
+  
+  db.connectDatabase(db.UserRightsTable, db.UserRightsSchema, function (table) {
+    table.find({}, function (err, userRights) {
+      if (err) {
+        if (callback) callback(500, gateways);
+        console.log(err);
+      }
+
+      db.connectDatabase(db.GateWaysTable, db.GateWaysSchema, function (table) {
+        table.find({}, function (err, gatewaysList) {
+          if (err) {
+            if (callback) callback(500, gateways);
+            console.log(err);
+          }
+
+          db.connectDatabase(db.UsersTable, db.UsersSchema, function (table) {
+            table.find({}, function (err, users) {
+              if (err) {
+                if (callback) callback(500, gateways);
+                console.log(err);
+              }
+
+              userRights.forEach(function (userRight) {
+                const gateway = gatewaysList.find(function (gateway) {
+                  return gateway.HardwareId === userRight.HardwareId;
+                });
+
+                const user = users.find(function (user) {
+                  return (user.Id === userRight.UserId && user.IsGateway);
+                });
+
+                const newCombined = {};
+                for(var k in combined) {
+                  if (k in gateway) newCombined[k] = gateway[k];
+                  if (k in user) newCombined[k] = user[k];
+                }
+                gateways.push(newCombined);
+              });
+
+              callback(200, gateways);
+            })
+          });
+        });
+      });
+    });
+  });
 }
 
