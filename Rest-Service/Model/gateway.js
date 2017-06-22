@@ -115,11 +115,25 @@ function getLastMeasurement(hardwareId, callback){
                DateTime:-1
            }
        },function(err, data){
-           console.log(data);
            if(err || data.length == 0) return callback(400, {status:"no measurements yet"});
            callback(200, data[0]);
        });
     }); 
+}
+
+function getMeasurements(hardwareId, limit, callback){
+    db.connectDatabase(db.MeasurementsTable, db.MeasurementsSchema, function(table){
+        table.find({HardwareId: hardwareId},{},{
+            skip:0,
+            limit:limit,
+            sort:{
+                DateTime:-1
+            }
+        },function(err,data){
+            if(err) return callback(500, {status:err});
+            callback(200, data);
+        });
+    });
 }
 
 function getAllMeasurements(hardwareId, callback){
