@@ -144,7 +144,7 @@ router.post('/lastmeasurement', function(req,res){
 
 router.post('getmeasurements', function(req, res){
     let hardwareId = req.body.gatewayid;
-    let amountOfMeasurements = req.body.measurementamount;
+    let amountOfMeasurements = req.body.limit;
 
     if(hardwareId == undefined) return res.status(400).send({status: "no gatewayid"});
     if(amountOfMeasurements == undefined) amountOfMeasurements = 48;

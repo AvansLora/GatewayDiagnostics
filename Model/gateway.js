@@ -7,7 +7,8 @@ module.exports = {
     registerGateway,
     addMeasurement,
     getLastMeasurement,
-    getAllMeasurements
+    getAllMeasurements,
+    getMeasurements
 };
 
 //add gateway in user schema, so gateway could login
