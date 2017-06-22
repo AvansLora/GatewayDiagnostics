@@ -89,7 +89,7 @@ router.post('/addgatewaytouser', function(req,res){
     jwt.verify(token, settings.secret, function(err, userdata){
         if(err) return res.status(500).send({status: err});
         if(userdata.IsGateway) return res.status(401).send({status: "gateways may not access other gateways"});
-        user.addUserRight(userdata,gwusername, function(status, message){
+        user.addUserRight(userdata, gwusername, function(status, message){
             res.status(status).send(message);
         });
     });

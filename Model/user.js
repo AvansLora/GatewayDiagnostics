@@ -100,7 +100,7 @@ function getGateWayId(gatewayUserData, callback){
     });
 }
 
-function checkGateway(gwUsername, gwPassword, callback){
+function checkGateway(gwUsername, callback){
     db.connectDatabase(db.UsersTable, db.UsersSchema, function(table){
         table.find({Username: gwUsername}, function(err, data){
             if(err || data.length <= 0 ) return callback();
