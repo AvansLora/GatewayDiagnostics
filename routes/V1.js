@@ -142,7 +142,7 @@ router.post('/lastmeasurement', function(req,res){
 });
 
 
-router.post('getmeasurements', function(req, res){
+router.post('/getmeasurements', function(req, res){
     let hardwareId = req.body.gatewayid;
     let amountOfMeasurements = req.body.limit;
 
