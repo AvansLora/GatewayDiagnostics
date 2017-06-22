@@ -1,3 +1,4 @@
+
 "use strict";
 var mongoose    = require('mongoose');
 var db          = require('./mongoose');
@@ -11,6 +12,7 @@ module.exports = {
   getGateways,
   getAllGateways
 };
+
 
 function registerUser(username, password, callback){
     var encryptedPass = encryption.encryptPassword(password);
@@ -55,8 +57,10 @@ function checkUsername(username, callback){
     });
 }
 
-function addUserRight(userdata, gwUsername, gwPassword, callback){
-    checkGateway(gwUsername,gwPassword, function(gatewayData){
+
+function addUserRight(userdata, gwUsername, callback){
+    checkGateway(gwUsername, function(gatewayData){
+
         if(!gatewayData) return  callback(400,{status:"unknown gateway, or incorrect password"});
         getGateWayId(gatewayData, function(hardwareId){
             console.log("inside: " + hardwareId);
@@ -100,10 +104,8 @@ function checkGateway(gwUsername, gwPassword, callback){
     db.connectDatabase(db.UsersTable, db.UsersSchema, function(table){
         table.find({Username: gwUsername}, function(err, data){
             if(err || data.length <= 0 ) return callback();
-
-            if(encryption.comparePassword(gwPassword, data[0].Password))
                 return callback(data[0]);
-            callback();
+
         });
     });
 }

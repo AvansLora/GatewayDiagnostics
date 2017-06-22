@@ -25,6 +25,7 @@ router.post('/registeruser', function(req,res){
 });
 
 router.post('/registergateway', function(req,res){
+
     let token       = req.body.token;
     let gatewayName = req.body.gatewayname;
     let username    = req.body.username;
@@ -84,13 +85,11 @@ router.use(function(req,res,next){
 
 router.post('/addgatewaytouser', function(req,res){
     let gwusername  = req.body.username;
-    let gwpassword  = req.body.password;
     let token       = req.body.token;
     jwt.verify(token, settings.secret, function(err, userdata){
         if(err) return res.status(500).send({status: err});
         if(userdata.IsGateway) return res.status(401).send({status: "gateways may not access other gateways"});
-
-        user.addUserRight(userdata,gwusername,gwpassword, function(status, message){
+        user.addUserRight(userdata,gwusername, function(status, message){
             res.status(status).send(message);
         });
     });
@@ -105,6 +104,7 @@ router.post('/listgateways', function(req,res){
         });
     });
 });
+
 
 router.post('/allgateways', function (req, res) {
   user.getAllGateways(function (response, data) {
@@ -141,9 +141,24 @@ router.post('/lastmeasurement', function(req,res){
     });
 });
 
+
+router.post('getmeasurements', function(req, res){
+    let hardwareId = req.body.gatewayid;
+    let amountOfMeasurements = req.body.measurementamount;
+
+    if(hardwareId == undefined) return res.status(400).send({status: "no gatewayid"});
+    if(amountOfMeasurements == undefined) amountOfMeasurements = 48;
+    gateway.getMeasurements(hardwareId, amountOfMeasurements, function(status, body){
+        res.status(status).send(body);
+    });
+
+});
+
 router.post('/allmeasurements', function(req,res){
     let hardwareId = req.body.gatewayid;
-    if(hardwareId == undefined)return res.status(400).send({status: "no gatewayid"});
+    if(hardwareId == undefined) return res.status(400).send({status: "no gatewayid"});
+
+
     gateway.getAllMeasurements(hardwareId, function(status, message){
         res.status(status).send(message);
     });
