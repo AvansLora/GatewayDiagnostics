@@ -97,4 +97,16 @@ Om alle metingen van een gateway op te halen, moet de volgende request verstuurd
         BODY    :
             token       : token
             gatewayId  : HardwareId
-de metingen wordt in de response teruggegeven
+de metingen worden in de response teruggegeven
+
+7. gelimiteerd aantal metingen
+Om een bepaald aantal metingen op te halen, kan de volgende request versuurd worden:
+    POST Request:
+        URL     : server:8081/apiV1/getmeasurements
+        BODY    : 
+            token       : token
+            gatewayId   : id van de gateway
+            limit       : maximaal aantal metingen
+de metingen worden in de response teruggegeven
+
+
