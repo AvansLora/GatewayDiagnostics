@@ -1,3 +1,4 @@
+"use strict";
 var express     = require('express');
 var jwt         = require('jsonwebtoken');
 var router      = express.Router();
@@ -24,7 +25,8 @@ router.post('/registeruser', function(req,res){
 });
 
 router.post('/registergateway', function(req,res){
-    let token       = req.body.token
+
+    let token       = req.body.token;
     let gatewayName = req.body.gatewayname;
     let username    = req.body.username;
     let password    = req.body.password;
@@ -103,6 +105,13 @@ router.post('/listgateways', function(req,res){
     });
 });
 
+
+router.post('/allgateways', function (req, res) {
+  user.getAllGateways(function (response, data) {
+    res.status(response).send({"data": data});
+  });
+});
+
 //measurement:
 //{"cputemp": 50, "casetemp":20, "humidity":70}
 router.post('/addmeasurement', function(req,res){
@@ -132,6 +141,7 @@ router.post('/lastmeasurement', function(req,res){
     });
 });
 
+
 router.post('getmeasurements', function(req, res){
     let hardwareId = req.body.gatewayid;
     let amountOfMeasurements = req.body.measurementamount;
@@ -147,6 +157,8 @@ router.post('getmeasurements', function(req, res){
 router.post('/allmeasurements', function(req,res){
     let hardwareId = req.body.gatewayid;
     if(hardwareId == undefined) return res.status(400).send({status: "no gatewayid"});
+
+
     gateway.getAllMeasurements(hardwareId, function(status, message){
         res.status(status).send(message);
     });

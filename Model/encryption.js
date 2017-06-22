@@ -1,3 +1,4 @@
+
 var bcrypt      = require("bcrypt-nodejs");
 
 function encryptPassword(password){
@@ -14,4 +15,4 @@ function comparePassword(plainPassword, hash){
 module.exports = {
     encryptPassword,
     comparePassword
-}
+};

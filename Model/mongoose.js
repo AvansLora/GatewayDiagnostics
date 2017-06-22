@@ -1,7 +1,5 @@
 var mongoose = require('mongoose');
 
-
-
 //file with all constansts for mongoose
 function connectDatabase(table, schema, callback){
     var table = mongoose.model(table, schema);
@@ -58,4 +56,5 @@ module.exports = {
     GateWaysSchema,
     MeasurementsSchema,
     dbLocation
-}
+};
+
